@@ -49,13 +49,20 @@ class MainActivity : AppCompatActivity(), FragmentCallback {
             override fun onTabUnselected(tab: TabLayout.Tab) {}
             override fun onTabReselected(tab: TabLayout.Tab) {}
         })
+
     }
 
-    override fun onClickItem(url: String, id: String) {
-        WebViewActivity.start(this, url)
-        intent.putExtra("ID",id)
-        Log.d("check",id)
+    override fun onClickItem(shop: Shop) {
+        WebViewActivity.start1(this,shop)
+        intent.putExtra("ID",shop.id)
+//        intent.putExtra("KEY_URL",if (shop.couponUrls.sp.isNotEmpty()) shop.couponUrls.sp else shop.couponUrls.pc)
     }
+
+    override fun onClickItem2(shop: FavoriteShop) {
+        WebViewActivity.start2(this,shop)
+        intent.putExtra("ID",shop.id)
+//        intent.putExtra("KEY_URL", shop.imageUrl)
+  }
 
     /**
      * お気に入りタブにトーストを表示
@@ -78,7 +85,6 @@ class MainActivity : AppCompatActivity(), FragmentCallback {
             name = shop.name
             imageUrl = shop.logoImage
             url = shop.couponUrls.sp.ifEmpty { shop.couponUrls.pc }
-//            address = shop.address
         })
         (viewPagerAdapter.fragments[VIEW_PAGER_POSITION_FAVORITE] as FavoriteFragment).updateData()
     }
@@ -115,51 +121,4 @@ class MainActivity : AppCompatActivity(), FragmentCallback {
         private const val VIEW_PAGER_POSITION_API = 0
         private const val VIEW_PAGER_POSITION_FAVORITE = 1
     }
-
-
-    class ApiItemViewHolder(private val binding: RecyclerFavoriteBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        fun bind(shop: Shop, position: Int, adapter: ApiAdapter) {
-            binding.rootView.apply {
-                // 偶数番目と奇数番目で背景色を変更させる
-                binding.rootView.setBackgroundColor(
-                    ContextCompat.getColor(
-                        binding.rootView.context,
-                        if (position % 2 == 0) android.R.color.white else android.R.color.system_accent2_50
-                    )
-                )
-                setOnClickListener {
-                    adapter.onClickItem?.invoke(if (shop.couponUrls.sp.isNotEmpty()) shop.couponUrls.sp else shop.couponUrls.pc)
-                }
-            }
-
-            // 1行の項目にShopの値をセット
-            // nameTextViewのtextプロパティに代入されたオブジェクトのnameプロパティを代入
-            binding.nameTextView.text = shop.name
-
-            binding.addressTextView.text = shop.address
-
-            // Picassoライブラリを使い、imageViewにdata.logoImageのurlの画像を読み込ませる
-            Picasso.get().load(shop.logoImage).into(binding.imageView)
-
-            // 星の処理
-            binding.favoriteImageView.apply {
-                // お気に入り状態を取得
-                val isFavorite = FavoriteShop.findBy(shop.id) != null
-
-                // 白抜きの星を設定
-                setImageResource(if (isFavorite) R.drawable.ic_star else R.drawable.ic_star_border)
-
-                // 星をタップした時の処理
-                setOnClickListener {
-                    if (isFavorite) {
-                        adapter.onClickDeleteFavorite?.invoke(shop)
-                    } else {
-                        adapter.onClickAddFavorite?.invoke(shop)
-                    }
-                    adapter.notifyItemChanged(position)
-                }
-            }
-        }
-    }
- }
+}

@@ -16,6 +16,7 @@ class WebViewActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.webView.loadUrl(intent.getStringExtra(KEY_URL).toString())
+        Log.d("check2",intent.getStringExtra(KEY_URL).toString())
 
         binding.favoriteImageView2.apply {
             intent.getStringExtra("ID")
@@ -32,7 +33,7 @@ class WebViewActivity : AppCompatActivity() {
             // 星をタップした時の処理
             setOnClickListener{
                 if (isFavorite2 != null){
-                    R.drawable.ic_star_border // 白抜きの星を設定
+                    R.drawable.ic_star_border // 白抜きの星を設定adapter.onClickDeleteFavorite?.invoke(shop)
                 }else{
                     R.drawable.ic_star // 白塗りの星を設定
                 }
@@ -42,16 +43,22 @@ class WebViewActivity : AppCompatActivity() {
 
     companion object {
         private const val KEY_URL = "key_url"
-        fun start(activity: Activity, url: String) {
+        fun start1(activity: Activity, shop: Shop) {
             activity.startActivity(
                 Intent(activity, WebViewActivity::class.java).putExtra(
                     KEY_URL,
-                    url
+                    if (shop.couponUrls.sp.isNotEmpty()) shop.couponUrls.sp else shop.couponUrls.pc
                 )
             )
         }
+        fun start2(activity: Activity, shop: FavoriteShop) {
+            activity.startActivity(
+                Intent(activity, WebViewActivity::class.java).putExtra(
+                    KEY_URL,
+                    shop.url
+                )
+            )
+        }
+
     }
-
-
-
 }

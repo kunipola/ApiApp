@@ -69,7 +69,7 @@ class ApiFragment : Fragment() {
             }
             // Itemをクリックしたとき
             onClickItem = {
-                fragmentCallback?.onClickItem(String(),String())
+                fragmentCallback?.onClickItem(it)
             }
         }
 
